@@ -1,0 +1,51 @@
+def calcular_receitas(df):
+            
+    receitas = df[df["tipo_pagamento"] == "Receita"]["valor"].sum()
+
+    return receitas
+
+
+def calcular_despesas(df):
+            
+    despesas = df[df["tipo_pagamento"] != "Receita"]["valor"].sum()
+
+    return despesas
+
+
+def calcular_saldo(df):
+
+    receitas = calcular_receitas(df)
+
+    despesas = calcular_despesas(df)
+
+    saldo = receitas - despesas
+
+    return saldo
+
+
+def gastos_por_categoria(df):
+
+    despesas = df[df["tipo_pagamento"] != "Receita"]
+
+    categorias = despesas.groupby("categoria")["valor"].sum()
+
+    return categorias
+
+
+def maiores_despesas(df, quantidade=5):
+
+    despesas = df[df["tipo_pagamento"] != "Receita"]
+
+    maiores_despesas = despesas.groupby(
+        "descricao"
+        )["valor"].sum() 
+
+    maiores_despesas = maiores_despesas.sort_values(
+        ascending=False
+        )
+    
+    maiores_despesas = maiores_despesas.head(
+        quantidade
+    )    
+
+    return maiores_despesas
