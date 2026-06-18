@@ -26,7 +26,7 @@ from src.cashflow import (
     gerar_fluxo_caixa,
     gerar_resumo_mensal
 )
-
+from src.visualization import grafico_saldo_mensal
 
 
 df = carregar_transacoes(
@@ -39,6 +39,10 @@ df_fluxo_caixa = gerar_fluxo_caixa(df)
 
 df_resumo_mensal = gerar_resumo_mensal(
     df_fluxo_caixa
+)
+
+grafico_saldo_mensal(
+    df_resumo_mensal
 )
 
 

@@ -64,4 +64,6 @@ def gerar_resumo_mensal(df_fluxo_caixa):
 
     resumo["Saldo"] = resumo["Receita"] - resumo["Despesa"]
 
+    resumo = resumo.reset_index()
+
     return resumo
