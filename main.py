@@ -1,3 +1,5 @@
+import pandas as pd
+
 from src.load_data import carregar_transacoes
 from src.clean_data import limpar_transacoes
 from src.analysis import (
@@ -16,6 +18,7 @@ from src.cards import (
     obter_dia_vencimento,
     calcular_fatura
 )
+from src.cards import gerar_parcelas
 
 
 df = carregar_transacoes(
@@ -84,5 +87,25 @@ fatura = calcular_fatura(
 
 print(fatura)
 
+print()
+print("Teste das Parcelas")
+
+parcelas_notebook = gerar_parcelas(
+    "Notebook Dell",
+    3600,
+    10,
+    datetime(
+        2026,
+        1,
+        10
+    ),
+    "Black Master"
+)
+
+df_parcelas = pd.DataFrame(
+    parcelas_notebook
+)
+
+print(df_parcelas)
 
 

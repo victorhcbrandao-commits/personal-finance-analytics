@@ -50,3 +50,33 @@ def calcular_fatura(data_compra, cartao):
     )
 
     return data_vencimento
+
+
+def gerar_parcelas(descricao, valor, parcelas, data_compra, cartao):
+
+    valor_parcela = valor / parcelas
+
+    lista_parcelas = []
+
+    primeira_fatura = calcular_fatura(
+        data_compra,
+        cartao
+    )
+
+    for numero_parcela in range(1, parcelas + 1):
+
+        data_parcela = primeira_fatura + relativedelta(
+            months=numero_parcela - 1
+        )
+
+        parcela = {
+            "descricao": descricao,
+            "parcela": f"{numero_parcela}/{parcelas}",
+            "valor": valor_parcela,
+            "data_fatura": data_parcela,
+            "cartao": cartao
+        }
+
+        lista_parcelas.append(parcela)
+
+    return lista_parcelas
