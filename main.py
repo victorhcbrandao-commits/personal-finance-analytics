@@ -78,11 +78,10 @@ parcelas_notebook = gerar_parcelas(
 
 df_parcelas = pd.DataFrame(parcelas_notebook)
 
-print(df_parcelas)
+df_fluxo_caixa = gerar_fluxo_caixa(df)
 
 print()
 print("Fluxo de Caixa Projetado")
-
 print(df_fluxo_caixa)
 
 

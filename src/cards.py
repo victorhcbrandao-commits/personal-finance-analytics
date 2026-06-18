@@ -74,7 +74,7 @@ def gerar_parcelas(descricao, valor, parcelas, data_compra, cartao):
             "parcela": f"{numero_parcela}/{parcelas}",
             "valor": valor_parcela,
             "data_fatura": data_parcela,
-            "cartao": cartao
+            "origem_pagamento": cartao
         }
 
         lista_parcelas.append(parcela)

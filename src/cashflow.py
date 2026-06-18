@@ -10,13 +10,7 @@ def gerar_fluxo_caixa(df):
 
         if linha["tipo_pagamento"] == "Cartão":
 
-            print(
-                linha["descricao"],
-                linha["tipo_pagamento"],
-                linha["cartao"]
-            )
-
-        
+               
             parcelas = gerar_parcelas(
                 linha["descricao"],
                 linha["valor"],
@@ -26,6 +20,18 @@ def gerar_fluxo_caixa(df):
         )
 
             lista_fluxo_caixa.extend(parcelas)
+
+        else:
+
+            transacao = {
+                "descricao": linha["descricao"],
+                "parcela": "1/1",
+                "valor": linha["valor"],
+                "data_fatura": linha["data_compra"],
+                "origem_pagamento": linha["tipo_pagamento"]
+            }
+
+            lista_fluxo_caixa.append(transacao)
 
     df_fluxo_caixa = pd.DataFrame(
         lista_fluxo_caixa
