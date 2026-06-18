@@ -7,6 +7,15 @@ from src.analysis import (
     gastos_por_categoria,
     maiores_despesas        
 )
+from src.cards import (
+    obter_dia_fechamento,
+    obter_dia_vencimento
+)
+from src.cards import (
+    obter_dia_fechamento,
+    obter_dia_vencimento,
+    calcular_fatura
+)
 
 
 df = carregar_transacoes(
@@ -41,6 +50,39 @@ print(categorias)
 print()
 print("Top maiores despesas:")
 print(top_despesas)
+
+print()
+print("Teste dos cartões")
+
+print(
+    obter_dia_fechamento(
+        "Black Master"
+    )
+)
+
+print(
+    obter_dia_vencimento(
+        "Black Master"
+    )
+)
+
+from datetime import datetime
+
+print()
+print("Teste das Faturas")
+
+data_compra = datetime(
+    2026,
+    12,
+    20
+)
+
+fatura = calcular_fatura(
+    data_compra,
+    "Black Master"
+)
+
+print(fatura)
 
 
 
