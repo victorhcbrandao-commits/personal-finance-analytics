@@ -1,5 +1,5 @@
 ﻿data_compra,descricao,categoria,tipo_pagamento,valor,parcelas,cartao
 05/01/2026,Supermercado Angeloni,Alimentação,Débito,245.9,1,
 08/01/2026,Netflix,Assinatura,Cartão,39.9,1,Black Master
-10/01/2026,Notebook Dell,Tecnologia,Cartão,3600,10,Uniclass Visa
+10/01/2026,Notebook Dell,Tecnologia,Cartão,3600,10,Black Visa
 15/01/2026,Salário,Receita,Receita,8500,1,

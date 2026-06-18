@@ -1,5 +1,7 @@
 import pandas as pd
 
+from datetime import datetime
+
 from src.load_data import carregar_transacoes
 from src.clean_data import limpar_transacoes
 from src.analysis import (
@@ -19,6 +21,8 @@ from src.cards import (
     calcular_fatura
 )
 from src.cards import gerar_parcelas
+from src.cashflow import gerar_fluxo_caixa
+
 
 
 df = carregar_transacoes(
@@ -26,6 +30,8 @@ df = carregar_transacoes(
 )
 
 df = limpar_transacoes(df)
+
+df_fluxo_caixa = gerar_fluxo_caixa(df)
 
 
 receitas = calcular_receitas(df)
@@ -54,41 +60,9 @@ print()
 print("Top maiores despesas:")
 print(top_despesas)
 
-print()
-print("Teste dos cartões")
-
-print(
-    obter_dia_fechamento(
-        "Black Master"
-    )
-)
-
-print(
-    obter_dia_vencimento(
-        "Black Master"
-    )
-)
-
-from datetime import datetime
 
 print()
-print("Teste das Faturas")
-
-data_compra = datetime(
-    2026,
-    12,
-    20
-)
-
-fatura = calcular_fatura(
-    data_compra,
-    "Black Master"
-)
-
-print(fatura)
-
-print()
-print("Teste das Parcelas")
+print("Sistema de Parcelamento")
 
 parcelas_notebook = gerar_parcelas(
     "Notebook Dell",
@@ -99,13 +73,16 @@ parcelas_notebook = gerar_parcelas(
         1,
         10
     ),
-    "Black Master"
+    "Black Visa"
 )
 
-df_parcelas = pd.DataFrame(
-    parcelas_notebook
-)
+df_parcelas = pd.DataFrame(parcelas_notebook)
 
 print(df_parcelas)
+
+print()
+print("Fluxo de Caixa Projetado")
+
+print(df_fluxo_caixa)
 
 
