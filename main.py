@@ -22,6 +22,10 @@ from src.cards import (
 )
 from src.cards import gerar_parcelas
 from src.cashflow import gerar_fluxo_caixa
+from src.cashflow import (
+    gerar_fluxo_caixa,
+    gerar_resumo_mensal
+)
 
 
 
@@ -32,6 +36,10 @@ df = carregar_transacoes(
 df = limpar_transacoes(df)
 
 df_fluxo_caixa = gerar_fluxo_caixa(df)
+
+df_resumo_mensal = gerar_resumo_mensal(
+    df_fluxo_caixa
+)
 
 
 receitas = calcular_receitas(df)
@@ -84,4 +92,8 @@ print()
 print("Fluxo de Caixa Projetado")
 print(df_fluxo_caixa)
 
+print()
+print("Resumo Mensal")
+
+print(df_resumo_mensal)
 
