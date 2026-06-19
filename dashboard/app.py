@@ -6,6 +6,7 @@ from src.cashflow import (
     gerar_fluxo_caixa,
     gerar_resumo_mensal
 )
+from src.analysis import maiores_despesas
 
 st.title(
     "FinSight - Personal Finance Analytics"
@@ -14,6 +15,8 @@ st.title(
 df = carregar_transacoes("data/raw/transacoes.csv")
 
 df = limpar_transacoes(df)
+
+top_despesas = maiores_despesas(df)
 
 df_fluxo_caixa = gerar_fluxo_caixa(df)
 
@@ -56,4 +59,12 @@ st.line_chart(
     df_resumo_mensal,
     x="periodo",
     y="Saldo"
+)
+
+st.subheader(
+    "Top Maiores Despesas"
+)
+
+st.dataframe(
+    top_despesas
 )
