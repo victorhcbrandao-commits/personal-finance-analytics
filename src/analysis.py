@@ -33,7 +33,7 @@ def gastos_por_categoria(df):
         ascending=False
     )
 
-    return categorias
+    return categorias.reset_index()
 
 
 def maiores_despesas(df, quantidade=5):
@@ -52,5 +52,25 @@ def maiores_despesas(df, quantidade=5):
         quantidade
     )    
 
-    return maiores_despesas
+    return maiores_despesas.reset_index()
+
+def maiores_receitas(df, quantidade=5):
+
+    receitas = df[
+        df["tipo_pagamento"] == "Receita"
+    ]
+
+    maiores_receitas = receitas.groupby(
+        "descricao"
+    )["valor"].sum()
+
+    maiores_receitas = maiores_receitas.sort_values(
+        ascending=False
+    )
+
+    maiores_receitas = maiores_receitas.head(
+        quantidade
+    )
+
+    return maiores_receitas.reset_index()
 
