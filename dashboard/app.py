@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 
 from io import BytesIO
 
+from src.utils import formatar_moeda
 from src.load_data import carregar_transacoes
 from src.clean_data import limpar_transacoes
 from src.cashflow import (
@@ -16,8 +17,10 @@ from src.analysis import gastos_por_categoria
 from src.analysis import (
     maiores_despesas,
     maiores_receitas,
-    gastos_por_categoria
+    gastos_por_categoria,
+    despesas_por_cartao 
 )
+
 
 st.title(
     "FinSight - Personal Finance Analytics"
@@ -170,6 +173,13 @@ top_receitas["valor_formatado"] = (
 
 categorias = gastos_por_categoria(df)
 
+cartoes = despesas_por_cartao(df)
+
+cartoes["valor_formatado"] = (
+    cartoes["valor"]
+    .apply(formatar_moeda)
+)
+
 df_fluxo_caixa = gerar_fluxo_caixa(df)
 
 df_resumo_mensal = gerar_resumo_mensal(
@@ -190,14 +200,6 @@ saldo_acumulado = df_resumo_mensal["Saldo"].sum()
 
 quantidade_transacoes= len(df)
 
-def formatar_moeda(valor):
-
-    return (
-        f"R$ {valor:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
 
 def card_kpi(titulo, valor, icone, cor):
 
@@ -440,6 +442,53 @@ fig.update_layout(
 fig.update_traces(
     texttemplate="R$ %{text:.2f}",
     textposition="outside"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+st.subheader(
+    "Despesas por Cartão"
+)
+
+fig = px.bar(
+    cartoes,
+    x="valor",
+    y="cartao",
+    orientation="h",
+    text="valor_formatado",
+    color="cartao",
+    color_discrete_map={
+        "Black Visa": "#F59E0B",
+        "Black Master": "#8B5CF6",
+        "Azul Platinum": "#2563EB"
+    }
+)
+
+fig.update_layout(
+    showlegend=False
+)
+
+fig.update_traces(
+    texttemplate="%{text}",
+    textposition="outside"
+)
+
+fig.update_xaxes(
+    range=[0, cartoes["valor"].max() * 1.35],
+    visible=False
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=False,
+    yaxis={
+        "categoryorder": "total ascending"
+    },
+    template="plotly_dark"
 )
 
 st.plotly_chart(

@@ -74,3 +74,20 @@ def maiores_receitas(df, quantidade=5):
 
     return maiores_receitas.reset_index()
 
+
+def despesas_por_cartao(df):
+
+    despesas_cartao = df[
+        df["tipo_pagamento"] == "Cartão"
+    ]
+
+    cartoes = despesas_cartao.groupby(
+        "cartao"
+    )["valor"].sum()
+
+    cartoes = cartoes.sort_values(
+        ascending=False
+    )
+
+    return cartoes.reset_index()
+
