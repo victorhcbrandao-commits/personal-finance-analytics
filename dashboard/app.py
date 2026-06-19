@@ -7,6 +7,7 @@ from src.cashflow import (
     gerar_resumo_mensal
 )
 from src.analysis import maiores_despesas
+from src.analysis import gastos_por_categoria
 
 st.title(
     "FinSight - Personal Finance Analytics"
@@ -16,7 +17,48 @@ df = carregar_transacoes("data/raw/transacoes.csv")
 
 df = limpar_transacoes(df)
 
+st.sidebar.title(
+    "Filtros"
+)
+anos = sorted(df["data_compra"].dt.year.unique())
+
+ano_selecionado = st.sidebar.selectbox(
+    "Ano",
+    anos
+)
+
+df = df[
+    df["data_compra"].dt.year == ano_selecionado
+]    
+
+categorias = sorted(
+    df["categoria"].unique()
+)
+
+categoria_selecionada = st.sidebar.selectbox(
+    "Categoria",
+    ["Todas"] + categorias
+)
+
+if categoria_selecionada != "Todas":
+    
+    df = df[
+    df["categoria"] == categoria_selecionada
+]
+
+tipo_pagamento_selecionado = st.sidebar.selectbox(
+    "Tipo de Pagamento",
+    ["Todos"] + sorted(df["tipo_pagamento"].unique())
+)
+if tipo_pagamento_selecionado != "Todos":
+
+    df = df[
+        df["tipo_pagamento"] == tipo_pagamento_selecionado
+    ]
+
 top_despesas = maiores_despesas(df)
+
+categorias = gastos_por_categoria(df)
 
 df_fluxo_caixa = gerar_fluxo_caixa(df)
 
@@ -67,4 +109,16 @@ st.subheader(
 
 st.dataframe(
     top_despesas
+)
+
+st.subheader(
+    "Gastos por Categoria"
+)
+
+st.dataframe(
+    categorias
+)
+
+st.bar_chart(
+    categorias
 )

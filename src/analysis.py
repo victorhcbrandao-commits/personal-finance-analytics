@@ -29,6 +29,10 @@ def gastos_por_categoria(df):
 
     categorias = despesas.groupby("categoria")["valor"].sum()
 
+    categorias = categorias.sort_values(
+        ascending=False
+    )
+
     return categorias
 
 
@@ -49,3 +53,4 @@ def maiores_despesas(df, quantidade=5):
     )    
 
     return maiores_despesas
+

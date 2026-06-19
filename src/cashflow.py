@@ -41,8 +41,12 @@ def gerar_fluxo_caixa(df):
 
 def gerar_resumo_mensal(df_fluxo_caixa):
 
-    df_fluxo_caixa["ano"] = df_fluxo_caixa["data_fatura"].dt.year
+    if df_fluxo_caixa.empty:
+        return pd.DataFrame(
+            columns=["ano", "mes", "Receita", "Despesa", "Saldo"]
+        )
 
+    df_fluxo_caixa["ano"] = df_fluxo_caixa["data_fatura"].dt.year
     df_fluxo_caixa["mes"] = df_fluxo_caixa["data_fatura"].dt.month
 
     df_fluxo_caixa["tipo_fluxo"] = df_fluxo_caixa["origem_pagamento"].apply(
@@ -51,19 +55,21 @@ def gerar_resumo_mensal(df_fluxo_caixa):
 
     resumo = df_fluxo_caixa.groupby(
         ["ano", "mes", "tipo_fluxo"]
-    )["valor"].sum()
-
-    resumo = resumo.reset_index()
+    )["valor"].sum().reset_index()
 
     resumo = resumo.pivot_table(
         index=["ano", "mes"],
         columns="tipo_fluxo",
         values="valor",
-        fill_value=0 
-    )
+        fill_value=0
+    ).reset_index()
+
+    if "Receita" not in resumo.columns:
+        resumo["Receita"] = 0
+
+    if "Despesa" not in resumo.columns:
+        resumo["Despesa"] = 0
 
     resumo["Saldo"] = resumo["Receita"] - resumo["Despesa"]
-
-    resumo = resumo.reset_index()
 
     return resumo
