@@ -48,3 +48,16 @@ def carregar_projecao(caminho):
     return pd.read_csv(
         caminho
     )
+
+def carregar_renda_passiva(caminho):
+
+    df = pd.read_csv(
+        caminho
+    )
+
+    df["data"] = pd.to_datetime(
+        df["data"],
+        dayfirst=True
+    )
+
+    return df

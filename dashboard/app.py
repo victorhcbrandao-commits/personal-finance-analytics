@@ -13,7 +13,8 @@ from src.load_data import (
     carregar_patrimonio,
     carregar_patrimonio_historico,
     carregar_metas,
-    carregar_projecao
+    carregar_projecao,
+    carregar_renda_passiva
 )
 
 def card_kpi(titulo, valor, icone, cor):
@@ -51,12 +52,17 @@ from src.analysis import (
     investimentos_total,
     patrimonio_por_instituicao,
     patrimonio_por_tipo,
-    calcular_meses_meta 
+    calcular_meses_meta,
+    renda_passiva_total,
+    dividendos_por_mes,
+    patrimonio_fire,
+    percentual_fire,
+    anos_para_fire 
 )
 
 
 st.title(
-    "FinSight - Personal Finance Analytics"
+    "FinSight"
 )
 
 st.caption(
@@ -98,6 +104,17 @@ df_metas["percentual"] = (
     df_metas["atual"]
     / df_metas["objetivo"]
 ) * 100
+
+
+df_renda_passiva = carregar_renda_passiva("data/raw/renda_passiva.csv")
+
+renda_passiva = renda_passiva_total(
+    df_renda_passiva
+)
+
+df_dividendos_mes = dividendos_por_mes(
+    df_renda_passiva
+)
 
 df = limpar_transacoes(df)
 
@@ -278,6 +295,32 @@ aporte_mensal = (
     - total_despesas
 )
 
+despesa_anual = (
+    total_despesas
+    * 12
+)
+
+patrimonio_objetivo = patrimonio_fire(
+    despesa_anual
+)
+
+percentual_independencia = percentual_fire(
+    patrimonio,
+    patrimonio_objetivo
+)
+
+aporte_anual = (
+    aporte_mensal
+    * 12
+)
+
+anos_faltantes = anos_para_fire(
+    patrimonio,
+    patrimonio_objetivo,
+    aporte_anual
+)
+
+
 
 meses_reserva = calcular_meses_meta(
     50000,
@@ -307,8 +350,10 @@ patrimonio_instituicao = patrimonio_por_instituicao(df_patrimonio)
 
 patrimonio_tipo = patrimonio_por_tipo(df_patrimonio)
 
-st.subheader(
-    "Patrimônio"
+st.divider()
+
+st.header(
+    "💰 Patrimônio"
 )
 
 col1, col2, col3 = st.columns(3)
@@ -865,6 +910,12 @@ st.dataframe(
     df_exibicao
 )
 
+st.divider()
+
+st.header(
+    "💳 Cartões"
+)
+
 st.subheader(
     "Próximas Faturas"
 )
@@ -919,9 +970,46 @@ for i, (_, linha) in enumerate(faturas.iterrows()):
     """,
     unsafe_allow_html=True
 )
-        
+
+st.divider()
 
 st.header(
+    "🎯 Planejamento"
+)
+
+patrimonio_dezembro = (
+    df_projecao["patrimonio_projetado"]
+    .iloc[-1]
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    card_kpi(
+        "Patrimônio Projetado",
+        formatar_moeda(
+            patrimonio_dezembro
+        ),
+        "🚀",
+        "#3B82F6"
+    )
+
+with col2:
+
+    crescimento = (patrimonio_dezembro - patrimonio)
+
+    card_kpi(
+        "Crescimento Projetado",
+        formatar_moeda(
+            crescimento
+        ),
+        "📈",
+        "#00CC96"
+    )
+        
+
+st.subheader(
     "Metas Financeiras"
 )
 
@@ -979,44 +1067,16 @@ for i, (_, linha) in enumerate(df_metas.iterrows()):
             unsafe_allow_html=True
         )
         
-patrimonio_dezembro = (
-    df_projecao["patrimonio_projetado"]
-    .iloc[-1]
-)
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    card_kpi(
-        "Patrimônio Projetado",
-        formatar_moeda(
-            patrimonio_dezembro
-        ),
-        "🚀",
-        "#3B82F6"
-    )
-
-with col2:
-
-    crescimento = (
-        patrimonio_dezembro
-        - patrimonio
-    )
-
-    card_kpi(
-        "Crescimento Projetado",
-        formatar_moeda(
-            crescimento
-        ),
-        "📈",
-        "#00CC96"
-    )
-
+st.divider()
 
 st.header(
+    "📈 Projeções"
+)
+
+st.subheader(
     "Projeção Financeira"
 )
+
 fig = px.line(
     df_projecao,
     x="mes",
@@ -1033,4 +1093,125 @@ fig.update_layout(
 st.plotly_chart(
     fig,
     use_container_width=True
+)
+
+st.divider()
+
+st.header(
+    "💵 Renda Passiva"
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    card_kpi(
+        "Renda Passiva Total",
+        formatar_moeda(renda_passiva),
+        "💵",
+        "#00CC96"
+    )
+
+with col2:
+    media_mensal = df_dividendos_mes["valor"].mean()
+
+    card_kpi(
+        "Média Mensal",
+        formatar_moeda(media_mensal),
+        "📈",
+        "#3B82F6"
+    )
+
+    st.subheader(
+    "Dividendos por Mês"
+)
+
+df_dividendos_mes["valor_formatado"] = (
+    df_dividendos_mes["valor"]
+    .apply(formatar_moeda)
+)
+
+fig = px.bar(
+    df_dividendos_mes,
+    x="mes",
+    y="valor",
+    text="valor_formatado"
+)
+
+fig.update_traces(
+    texttemplate="%{text}",
+    textposition="outside"
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    template="plotly_dark",
+    showlegend=False
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+st.divider()
+
+st.header(
+    "🔥 Independência Financeira"
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    card_kpi(
+        "Patrimônio FIRE",
+        formatar_moeda(
+            patrimonio_objetivo
+        ),
+        "🔥",
+        "#EF4444"
+    )
+
+with col2:
+
+    card_kpi(
+        "Progresso FIRE",
+        f"{percentual_independencia:.1f}%",
+        "📈",
+        "#F59E0B"
+    )
+
+with col3:
+
+    card_kpi(
+        "Anos Restantes",
+        f"{anos_faltantes:.1f}",
+        "📅",
+        "#8B5CF6"
+    )
+
+largura_fire = max(
+    percentual_independencia,
+    3
+)
+
+st.subheader(
+    "Progresso para Independência Financeira"
+)
+
+st.markdown(
+    f"""
+<div style='width:100%; height:16px; background-color:#1f2937; border-radius:8px;'>
+
+<div style='width:{largura_fire}%; height:16px; background-color:#EF4444; border-radius:8px;'>
+</div>
+
+</div>
+
+<div style='margin-top:12px; color:#9ca3af;'>
+{percentual_independencia:.2f}% concluído
+</div>
+""",
+    unsafe_allow_html=True
 )

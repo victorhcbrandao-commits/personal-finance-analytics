@@ -187,3 +187,63 @@ def calcular_meses_meta(objetivo, patrimonio_atual, aporte_mensal):
 
     return meses
 
+
+def renda_passiva_total(df):
+
+    return df["valor"].sum()
+
+
+
+def dividendos_por_mes(df):
+
+    df = df.copy()
+
+    df["mes"] = df["data"].dt.strftime(
+        "%b/%y"
+    )
+
+    renda = (
+        df.groupby(
+            "mes"
+        )["valor"]
+        .sum()
+        .reset_index()
+    )
+
+    return renda
+
+def patrimonio_fire(despesa_anual):
+
+    return despesa_anual / 0.04
+
+def percentual_fire(
+    patrimonio_atual,
+    patrimonio_objetivo
+):
+
+    return (
+        patrimonio_atual
+        / patrimonio_objetivo
+    ) * 100
+
+def anos_para_fire(
+    patrimonio_atual,
+    patrimonio_objetivo,
+    aporte_anual
+):
+
+    faltante = (
+        patrimonio_objetivo
+        - patrimonio_atual
+    )
+
+    if faltante <= 0:
+        return 0
+
+    anos = (
+        faltante
+        / aporte_anual
+    )
+
+    return anos
+
