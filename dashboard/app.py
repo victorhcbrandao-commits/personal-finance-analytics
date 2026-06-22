@@ -6,7 +6,14 @@ from math import ceil
 
 from io import BytesIO
 
-from components.graficos import grafico_patrimonio_instituicao
+
+from components.graficos import(
+    grafico_patrimonio_instituicao,
+    grafico_patrimonio_tipo,
+    grafico_evolucao_patrimonial,
+    grafico_projecao,
+    grafico_dividendos
+)
 from components.card_fire import card_fire
 from components.card_meta import card_meta
 from components.card_cartao import card_cartao
@@ -393,40 +400,8 @@ patrimonio_tipo["valor_formatado"] = (
     .apply(formatar_moeda)
 )
 
-fig = px.bar(
-    patrimonio_tipo,
-    x="valor",
-    y="tipo",
-    orientation="h",
-    text="valor_formatado"
-)
-
-fig.update_traces(
-    texttemplate="%{text}",
-    textposition="outside"
-)
-
-fig.update_xaxes(
-    range=[
-        0,
-        patrimonio_tipo["valor"].max() * 1.25
-    ],
-    visible=False
-)
-
-fig.update_layout(
-    xaxis_title="",
-    yaxis_title="",
-    showlegend=False,
-    yaxis={
-        "categoryorder": "total ascending"
-    },
-    template="plotly_dark"
-)
-
-st.plotly_chart(
-    fig,
-    use_container_width=True
+grafico_patrimonio_tipo(
+    patrimonio_tipo
 )
 
 
@@ -434,22 +409,8 @@ st.subheader(
     "Evolução Patrimonial"
 )
 
-fig = px.line(
-    df_patrimonio_historico,
-    x="data",
-    y="patrimonio",
-    markers=True
-)
-
-fig.update_layout(
-    xaxis_title="",
-    yaxis_title="",
-    template="plotly_dark"
-)
-
-st.plotly_chart(
-    fig,
-    use_container_width=True
+grafico_evolucao_patrimonial(
+    df_patrimonio_historico
 )
 
 quantidade_transacoes= len(df)
@@ -960,22 +921,8 @@ st.subheader(
     "Projeção Financeira"
 )
 
-fig = px.line(
-    df_projecao,
-    x="mes",
-    y="patrimonio_projetado",
-    markers=True
-)
-
-fig.update_layout(
-    xaxis_title="",
-    yaxis_title="",
-    template="plotly_dark"
-)
-
-st.plotly_chart(
-    fig,
-    use_container_width=True
+grafico_projecao(
+    df_projecao
 )
 
 st.divider()
@@ -1013,28 +960,8 @@ df_dividendos_mes["valor_formatado"] = (
     .apply(formatar_moeda)
 )
 
-fig = px.bar(
-    df_dividendos_mes,
-    x="mes",
-    y="valor",
-    text="valor_formatado"
-)
-
-fig.update_traces(
-    texttemplate="%{text}",
-    textposition="outside"
-)
-
-fig.update_layout(
-    xaxis_title="",
-    yaxis_title="",
-    template="plotly_dark",
-    showlegend=False
-)
-
-st.plotly_chart(
-    fig,
-    use_container_width=True
+grafico_dividendos(
+    df_dividendos_mes
 )
 
 st.divider()
