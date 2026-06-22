@@ -36,3 +36,15 @@ def carregar_patrimonio_historico(caminho):
     )
 
     return df
+
+def carregar_metas(caminho):
+
+    return pd.read_csv(
+        caminho
+    )
+
+def carregar_projecao(caminho):
+
+    return pd.read_csv(
+        caminho
+    )

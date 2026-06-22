@@ -174,3 +174,16 @@ def patrimonio_por_tipo(df):
 
     return patrimonio.reset_index()
 
+
+def calcular_meses_meta(objetivo, patrimonio_atual, aporte_mensal):
+
+    if patrimonio_atual >= objetivo:
+        return 0
+
+    meses = (
+        objetivo
+        - patrimonio_atual
+    ) / aporte_mensal
+
+    return meses
+
