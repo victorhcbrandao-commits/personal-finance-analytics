@@ -114,3 +114,63 @@ def proximas_faturas(
 
     return faturas
 
+
+def patrimonio_total(df):
+
+    return df["valor"].sum()
+
+
+def caixa_total(df):
+
+    caixa = df[
+        df["tipo"] == "Conta Corrente"
+    ]
+
+    return caixa["valor"].sum()
+
+
+def investimentos_total(df):
+
+    investimentos = df[
+        df["tipo"] != "Conta Corrente"
+    ]
+
+    return investimentos["valor"].sum()
+
+
+def patrimonio_por_instituicao(df):
+
+    patrimonio = df.groupby(
+        "instituicao"
+    )["valor"].sum()
+
+    patrimonio = patrimonio.sort_values(
+        ascending=False
+    )
+
+    return patrimonio.reset_index()
+
+def patrimonio_por_instituicao(df):
+
+    patrimonio = df.groupby(
+        "instituicao"
+    )["valor"].sum()
+
+    patrimonio = patrimonio.sort_values(
+        ascending=False
+    )
+
+    return patrimonio.reset_index()
+
+def patrimonio_por_tipo(df):
+
+    patrimonio = df.groupby(
+        "tipo"
+    )["valor"].sum()
+
+    patrimonio = patrimonio.sort_values(
+        ascending=False
+    )
+
+    return patrimonio.reset_index()
+

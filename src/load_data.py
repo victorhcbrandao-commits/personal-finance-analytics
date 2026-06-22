@@ -17,3 +17,22 @@ def carregar_cartoes(caminho):
     return pd.read_csv(
         caminho
     )
+
+def carregar_patrimonio(caminho):
+
+    return pd.read_csv(
+        caminho
+    )
+
+def carregar_patrimonio_historico(caminho):
+
+    df = pd.read_csv(
+        caminho
+    )
+
+    df["data"] = pd.to_datetime(
+        df["data"],
+        dayfirst=True
+    )
+
+    return df

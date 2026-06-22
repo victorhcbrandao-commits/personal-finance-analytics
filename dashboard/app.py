@@ -8,8 +8,28 @@ from io import BytesIO
 from src.utils import formatar_moeda
 from src.load_data import (
     carregar_transacoes,
-    carregar_cartoes
+    carregar_cartoes,
+    carregar_patrimonio,
+    carregar_patrimonio_historico
 )
+
+def card_kpi(titulo, valor, icone, cor):
+
+    st.markdown(
+        f"""
+<div style='background-color:#111827; padding:20px; border-radius:16px; border:1px solid #1f2937; min-height:120px;'>
+    <div style='display:flex; justify-content:space-between; align-items:center;'>
+        <span style='font-size:16px; color:#cbd5e1;'>{titulo}</span>
+        <span style='font-size:20px;'>{icone}</span>
+    </div>
+    <div style='font-size:24px; font-weight:700; color:{cor}; margin-top:18px; white-space:nowrap;'>
+        {valor}
+    </div>
+</div>
+        """,
+        unsafe_allow_html=True
+    )
+
 from src.clean_data import limpar_transacoes
 from src.cashflow import (
     gerar_fluxo_caixa,
@@ -22,7 +42,12 @@ from src.analysis import (
     maiores_receitas,
     gastos_por_categoria,
     despesas_por_cartao,
-    proximas_faturas 
+    proximas_faturas,
+    patrimonio_total,
+    caixa_total,
+    investimentos_total,
+    patrimonio_por_instituicao,
+    patrimonio_por_tipo 
 )
 
 
@@ -37,6 +62,10 @@ st.caption(
 df = carregar_transacoes("data/raw/transacoes.csv")
 
 df_cartoes = carregar_cartoes("data/raw/cartoes.csv")
+
+df_patrimonio = carregar_patrimonio("data/raw/patrimonio.csv")
+
+df_patrimonio_historico = carregar_patrimonio_historico("data/raw/patrimonio_historico.csv")
 
 df = limpar_transacoes(df)
 
@@ -206,25 +235,162 @@ total_despesas = df_resumo_mensal["Despesa"].sum()
 
 saldo_acumulado = df_resumo_mensal["Saldo"].sum()
 
+patrimonio = patrimonio_total(df_patrimonio)
+
+caixa = caixa_total(df_patrimonio)
+
+investimentos = investimentos_total(df_patrimonio)
+
+patrimonio_instituicao = patrimonio_por_instituicao(df_patrimonio)
+
+patrimonio_tipo = patrimonio_por_tipo(df_patrimonio)
+
+st.subheader(
+    "Patrimônio"
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    card_kpi(
+        "Patrimônio Total",
+        formatar_moeda(patrimonio),
+        "💰",
+        "#3B82F6"
+    )
+
+with col2:
+    card_kpi(
+        "Caixa",
+        formatar_moeda(caixa),
+        "💵",
+        "#00CC96"
+    )
+
+with col3:
+    card_kpi(
+        "Investimentos",
+        formatar_moeda(investimentos),
+        "📈",
+        "#F59E0B"
+    )
+
+
+st.subheader(
+    "Patrimônio por Instituição"
+)
+
+patrimonio_instituicao["valor_formatado"] = (
+    patrimonio_instituicao["valor"]
+    .apply(formatar_moeda)
+)
+
+fig = px.bar(
+    patrimonio_instituicao,
+    x="valor",
+    y="instituicao",
+    orientation="h",
+    text="valor_formatado"
+)
+
+fig.update_traces(
+    texttemplate="%{text}",
+    textposition="outside"
+)
+
+fig.update_xaxes(
+    range=[
+        0,
+        patrimonio_instituicao["valor"].max() * 1.25
+    ],
+    visible=False
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=False,
+    yaxis={
+        "categoryorder": "total ascending"
+    },
+    template="plotly_dark"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+st.subheader(
+    "Patrimônio por Tipo"
+)
+
+patrimonio_tipo["valor_formatado"] = (
+    patrimonio_tipo["valor"]
+    .apply(formatar_moeda)
+)
+
+fig = px.bar(
+    patrimonio_tipo,
+    x="valor",
+    y="tipo",
+    orientation="h",
+    text="valor_formatado"
+)
+
+fig.update_traces(
+    texttemplate="%{text}",
+    textposition="outside"
+)
+
+fig.update_xaxes(
+    range=[
+        0,
+        patrimonio_tipo["valor"].max() * 1.25
+    ],
+    visible=False
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    showlegend=False,
+    yaxis={
+        "categoryorder": "total ascending"
+    },
+    template="plotly_dark"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+
+st.subheader(
+    "Evolução Patrimonial"
+)
+
+fig = px.line(
+    df_patrimonio_historico,
+    x="data",
+    y="patrimonio",
+    markers=True
+)
+
+fig.update_layout(
+    xaxis_title="",
+    yaxis_title="",
+    template="plotly_dark"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
 quantidade_transacoes= len(df)
 
-
-def card_kpi(titulo, valor, icone, cor):
-
-    st.markdown(
-        f"""
-<div style='background-color:#111827; padding:20px; border-radius:16px; border:1px solid #1f2937; min-height:120px;'>
-    <div style='display:flex; justify-content:space-between; align-items:center;'>
-        <span style='font-size:16px; color:#cbd5e1;'>{titulo}</span>
-        <span style='font-size:20px;'>{icone}</span>
-    </div>
-    <div style='font-size:24px; font-weight:700; color:{cor}; margin-top:18px; white-space:nowrap;'>
-        {valor}
-    </div>
-</div>
-        """,
-        unsafe_allow_html=True
-    )
 
 col1, col2, col3, col4 = st.columns(4)
 
