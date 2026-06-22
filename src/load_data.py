@@ -11,3 +11,9 @@ def carregar_transacoes(caminho):
     )
 
     return df
+
+def carregar_cartoes(caminho):
+
+    return pd.read_csv(
+        caminho
+    )

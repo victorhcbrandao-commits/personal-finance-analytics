@@ -1,0 +1,4 @@
+cartao,fechamento,vencimento,limite,bandeira,cor,ativo,apelido,banco
+Black Visa,26,5,8600,Visa,#F59E0B,1,Black Visa,Itaú
+Black Master,26,5,31390,Mastercard,#8B5CF6,1,Black Master,Itaú
+Azul Platinum,22,2,24000,Mastercard,#2563EB,1,Azul,Itaú

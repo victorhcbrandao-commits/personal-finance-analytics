@@ -91,3 +91,26 @@ def despesas_por_cartao(df):
 
     return cartoes.reset_index()
 
+
+def proximas_faturas(
+        df_transacoes,
+        df_cartoes):
+
+    despesas_cartao = df_transacoes[
+        df_transacoes["tipo_pagamento"] == "Cartão"
+    ]
+
+    faturas = despesas_cartao.groupby(
+        "cartao"
+    )["valor"].sum()
+
+    faturas = faturas.reset_index()
+
+    faturas = faturas.merge(
+        df_cartoes,
+        on="cartao",
+        how="left"
+    )
+
+    return faturas
+
