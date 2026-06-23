@@ -43,9 +43,9 @@ def grafico_patrimonio_instituicao(
 )
 
     st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    fig,
+    width="stretch"
+)
 
 
 def grafico_patrimonio_tipo(
@@ -89,9 +89,9 @@ def grafico_patrimonio_tipo(
     )
 
     st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    fig,
+    width="stretch"
+)
 
 
 def grafico_evolucao_patrimonial(
@@ -114,9 +114,9 @@ def grafico_evolucao_patrimonial(
     )
 
     st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    fig,
+    width="stretch"
+)
 
 def grafico_projecao(
     df_projecao
@@ -138,9 +138,9 @@ def grafico_projecao(
     )
 
     st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    fig,
+    width="stretch"
+)
 
 def grafico_dividendos(
     dividendos_mes
@@ -166,6 +166,6 @@ def grafico_dividendos(
     )
 
     st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    fig,
+    width="stretch"
+)

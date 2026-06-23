@@ -64,6 +64,7 @@ st.caption(
     "Panorama completo da sua vida financeira"
 )
 
+
 df = carregar_transacoes("data/raw/transacoes.csv")
 
 df_cartoes = carregar_cartoes("data/raw/cartoes.csv")
@@ -71,7 +72,11 @@ df_cartoes = carregar_cartoes("data/raw/cartoes.csv")
 
 df_patrimonio = carregar_patrimonio("data/raw/patrimonio.csv")
 
-patrimonio = patrimonio_total(df_patrimonio)
+patrimonio = patrimonio_total(
+    df_patrimonio
+)
+
+faturas = proximas_faturas(df, df_cartoes)
 
 
 df_patrimonio_historico = carregar_patrimonio_historico("data/raw/patrimonio_historico.csv")
@@ -110,6 +115,74 @@ renda_passiva = renda_passiva_total(
 df_dividendos_mes = dividendos_por_mes(
     df_renda_passiva
 )
+
+st.sidebar.title(
+    "Filtros"
+)
+
+st.sidebar.markdown(
+    "Use os filtros abaixo para analisar os dados."
+)
+
+filtro_instituicao = st.sidebar.selectbox(
+    "Instituição",
+    ["Todas"] + sorted(
+        df_patrimonio["instituicao"].unique()
+    )
+)
+
+df_patrimonio_filtrado = df_patrimonio.copy()
+
+if filtro_instituicao != "Todas":
+
+    df_patrimonio_filtrado = (
+        df_patrimonio_filtrado[
+            df_patrimonio_filtrado["instituicao"]
+            == filtro_instituicao
+        ]
+    )
+
+    
+filtro_tipo_patrimonio = st.sidebar.selectbox(
+    "Tipo de Patrimônio",
+    ["Todos"] + sorted(
+        df_patrimonio["tipo"].unique()
+    )
+)
+
+if filtro_tipo_patrimonio != "Todos":
+
+    df_patrimonio_filtrado = (
+        df_patrimonio_filtrado[
+            df_patrimonio_filtrado["tipo"]
+            == filtro_tipo_patrimonio
+        ]
+    )
+
+filtro_cartao = st.sidebar.selectbox(
+    "Cartão",
+    ["Todos"] + sorted(
+        df_cartoes["cartao"].unique()
+    )
+)
+
+df_cartoes_filtrado = df_cartoes.copy()
+
+if filtro_cartao != "Todos":
+
+    df_cartoes_filtrado = (
+        df_cartoes_filtrado[
+            df_cartoes_filtrado["cartao"]
+            == filtro_cartao
+        ]
+    )
+
+faturas_filtrado = faturas.copy()
+
+if filtro_cartao != "Todos":
+    faturas_filtrado = faturas_filtrado[
+        faturas_filtrado["cartao"] == filtro_cartao
+    ]
 
 df = limpar_transacoes(df)
 
@@ -254,8 +327,6 @@ categorias = gastos_por_categoria(df)
 
 cartoes = despesas_por_cartao(df)
 
-faturas = proximas_faturas(df, df_cartoes)
-
 cartoes["valor_formatado"] = (
     cartoes["valor"]
     .apply(formatar_moeda)
@@ -279,11 +350,17 @@ total_despesas = df_resumo_mensal["Despesa"].sum()
 
 saldo_acumulado = df_resumo_mensal["Saldo"].sum()
 
-patrimonio = patrimonio_total(df_patrimonio)
+patrimonio = patrimonio_total(
+    df_patrimonio_filtrado
+)
 
-caixa = caixa_total(df_patrimonio)
+caixa = caixa_total(
+    df_patrimonio_filtrado
+)
 
-investimentos = investimentos_total(df_patrimonio)
+investimentos = investimentos_total(
+    df_patrimonio_filtrado
+)
 
 aporte_mensal = (
     total_receitas
@@ -341,9 +418,17 @@ meses_apartamento = calcular_meses_meta(
     aporte_mensal
 )
 
-patrimonio_instituicao = patrimonio_por_instituicao(df_patrimonio)
+patrimonio_instituicao = (
+    patrimonio_por_instituicao(
+        df_patrimonio_filtrado
+    )
+)
 
-patrimonio_tipo = patrimonio_por_tipo(df_patrimonio)
+patrimonio_tipo = (
+    patrimonio_por_tipo(
+        df_patrimonio_filtrado
+    )
+)
 
 st.divider()
 
@@ -449,7 +534,7 @@ fig.update_layout(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 df_grafico = df_resumo_mensal.copy()
@@ -520,7 +605,7 @@ st.subheader(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -576,7 +661,7 @@ fig.update_layout(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -612,7 +697,7 @@ fig.update_layout(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -644,7 +729,7 @@ fig.update_traces(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -692,7 +777,7 @@ fig.update_layout(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 st.subheader(
@@ -759,7 +844,7 @@ fig.update_layout(
 
 st.plotly_chart(
     fig,
-    use_container_width=True
+    width="stretch"
 )
 
 df_exibicao = df[
@@ -839,12 +924,11 @@ st.subheader(
 
 col1, col2, col3 = st.columns(3)
 
-for i, (_, linha) in enumerate(faturas.iterrows()):
+for i, (_, linha) in enumerate(faturas_filtrado.iterrows()):
 
     coluna = [col1, col2, col3][i % 3]
-    
-    with coluna:
 
+    with coluna:
         card_cartao(
             linha,
             formatar_moeda
