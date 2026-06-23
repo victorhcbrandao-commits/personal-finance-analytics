@@ -288,3 +288,38 @@ def dividend_yield(
         renda_passiva_anual
         / patrimonio
     ) * 100
+
+
+def crescimento_patrimonial_mensal(df):
+
+    df = df.sort_values(
+        "data"
+    )
+
+    if len(df) < 2:
+        return 0
+
+    patrimonio_atual = df["patrimonio"].iloc[-1]
+
+    patrimonio_anterior = df["patrimonio"].iloc[-2]
+
+    crescimento = (
+        patrimonio_atual
+        - patrimonio_anterior
+    ) / patrimonio_anterior * 100
+
+    return crescimento
+
+
+def meses_reserva_financeira(
+    patrimonio,
+    total_despesas
+):
+
+    if total_despesas == 0:
+        return 0
+
+    return (
+        patrimonio
+        / total_despesas
+    )

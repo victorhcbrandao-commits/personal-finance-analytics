@@ -55,8 +55,10 @@ from src.analysis import (
     anos_para_fire,
     taxa_economia,
     renda_passiva_anual,
-    dividend_yield 
-)
+    dividend_yield,
+    crescimento_patrimonial_mensal,
+    meses_reserva_financeira
+    )
 
 
 st.title(
@@ -130,6 +132,11 @@ dividend_yield_percentual = (
     )
 )
 
+crescimento_patrimonio_percentual = crescimento_patrimonial_mensal(
+    df_patrimonio_historico
+)
+
+
 
 st.sidebar.title(
     "Filtros"
@@ -199,6 +206,10 @@ if filtro_cartao != "Todos":
         faturas_filtrado["cartao"] == filtro_cartao
     ]
 
+
+patrimonio = patrimonio_total(
+    df_patrimonio_filtrado
+)
 
 filtro_periodo = st.sidebar.selectbox(
     "Período",
@@ -470,6 +481,16 @@ taxa_economia_percentual = (
     )
 )
 
+patrimonio_geral = patrimonio_total(
+    df_patrimonio
+)
+
+df_patrimonio_filtrado = df_patrimonio.copy()
+
+meses_reserva = meses_reserva_financeira(
+    patrimonio_geral,
+    total_despesas
+)
 
 patrimonio = patrimonio_total(
     df_patrimonio_filtrado
@@ -515,7 +536,7 @@ anos_faltantes = anos_para_fire(
 
 
 
-meses_reserva = calcular_meses_meta(
+meses_reserva_meta = calcular_meses_meta(
     50000,
     patrimonio,
     aporte_mensal
@@ -641,11 +662,11 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
 
     card_kpi(
-        "Transações",
-        str(quantidade_transacoes),
-        "📋",
-        "#F59E0B"
-    )
+    "Crescimento Mensal",
+    f"{crescimento_patrimonio_percentual:.1f}%",
+    "📈",
+    "#00CC96"
+)
 
 with col2:
 
@@ -659,9 +680,9 @@ with col2:
 with col3:
 
     card_kpi(
-        "Dividend Yield",
-        f"{dividend_yield_percentual:.2f}%",
-        "📈",
+        "Meses de Reserva",
+        f"{meses_reserva:.1f}",
+        "🛡️",
         "#3B82F6"
     )
 
