@@ -158,13 +158,27 @@ def grafico_dividendos(
     )
 
     fig.update_layout(
-        template="plotly_dark",
-        xaxis_title="",
-        yaxis_title="",
-        showlegend=False,
-        height=450
+    template="plotly_dark",
+    xaxis_title=None,
+    yaxis_title=None,
+    showlegend=False,
+    height=450,
+    margin=dict(
+        l=10,
+        r=10,
+        t=20,
+        b=10
     )
+)
 
+    fig.update_xaxes(
+    title_text=None
+)
+
+    fig.update_yaxes(
+    title_text=None
+)
+   
     st.plotly_chart(
     fig,
     width="stretch"

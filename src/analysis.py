@@ -198,16 +198,22 @@ def dividendos_por_mes(df):
 
     df = df.copy()
 
-    df["mes"] = df["data"].dt.strftime(
-        "%b/%y"
+    df["mes_data"] = (
+        df["data"]
+        .dt.to_period("M")
+        .dt.to_timestamp()
     )
 
     renda = (
-        df.groupby(
-            "mes"
-        )["valor"]
+        df.groupby("mes_data")["valor"]
         .sum()
         .reset_index()
+        .sort_values("mes_data")
+    )
+
+    renda["mes"] = (
+        renda["mes_data"]
+        .dt.strftime("%b/%y")
     )
 
     return renda
@@ -323,3 +329,30 @@ def meses_reserva_financeira(
         patrimonio
         / total_despesas
     )
+
+
+def crescimento_patrimonial_anual(df):
+
+    df = df.sort_values(
+        "data"
+    )
+
+    if len(df) < 2:
+        return 0
+
+    patrimonio_atual = (
+        df["patrimonio"]
+        .iloc[-1]
+    )
+
+    patrimonio_inicial = (
+        df["patrimonio"]
+        .iloc[0]
+    )
+
+    crescimento = (
+        patrimonio_atual
+        - patrimonio_inicial
+    ) / patrimonio_inicial * 100
+
+    return crescimento

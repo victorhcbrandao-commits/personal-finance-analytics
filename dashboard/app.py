@@ -57,7 +57,8 @@ from src.analysis import (
     renda_passiva_anual,
     dividend_yield,
     crescimento_patrimonial_mensal,
-    meses_reserva_financeira
+    meses_reserva_financeira,
+    crescimento_patrimonial_anual
     )
 
 
@@ -136,6 +137,11 @@ crescimento_patrimonio_percentual = crescimento_patrimonial_mensal(
     df_patrimonio_historico
 )
 
+crescimento_anual = (
+    crescimento_patrimonial_anual(
+        df_patrimonio_historico
+    )
+)
 
 
 st.sidebar.title(
@@ -657,7 +663,7 @@ with col3:
 with col4:
     card_kpi("Taxa de Economia", f"{taxa_economia_percentual:.1f}%", "🚀", "#00CC96")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
 
@@ -671,13 +677,24 @@ with col1:
 with col2:
 
     card_kpi(
+        "Crescimento Anual",
+        f"{crescimento_anual:.1f}%",
+        "📆",
+        "#3B82F6"
+    )
+
+with col3:
+
+    card_kpi(
         "Renda Passiva Anual",
-        formatar_moeda(renda_passiva_ano),
+        formatar_moeda(
+            renda_passiva_ano
+        ),
         "💵",
         "#00CC96"
     )
 
-with col3:
+with col4:
 
     card_kpi(
         "Meses de Reserva",
@@ -686,13 +703,13 @@ with col3:
         "#3B82F6"
     )
 
-with col4:
+with col5:
 
     card_kpi(
         "Meta FIRE",
         f"{percentual_independencia:.1f}%",
         "🔥",
-        "#EF4444"
+        "#8B5CF6"
     )
 
 st.subheader(
@@ -1195,6 +1212,8 @@ st.header(
     "💵 Renda Passiva"
 )
 
+st.divider()
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -1215,8 +1234,12 @@ with col2:
         "#3B82F6"
     )
 
-    st.subheader(
-    "Dividendos por Mês"
+
+st.divider()
+
+
+st.subheader(
+    "📈 Dividendos por Mês"
 )
 
 df_dividendos_filtrado["valor_formatado"] = (
