@@ -81,6 +81,7 @@ faturas = proximas_faturas(df, df_cartoes)
 
 df_patrimonio_historico = carregar_patrimonio_historico("data/raw/patrimonio_historico.csv")
 
+
 df_metas = carregar_metas("data/raw/metas.csv")
 
 df_projecao = carregar_projecao("data/raw/projecao.csv")
@@ -184,7 +185,56 @@ if filtro_cartao != "Todos":
         faturas_filtrado["cartao"] == filtro_cartao
     ]
 
+
+filtro_periodo = st.sidebar.selectbox(
+    "Período",
+    [
+        "Tudo",
+        "Último mês",
+        "Últimos 3 meses",
+        "Últimos 6 meses",
+        "Ano atual"
+    ]
+)
+
 df = limpar_transacoes(df)
+
+df_historico_filtrado = (
+    df_patrimonio_historico.copy()
+)
+
+if filtro_periodo == "Último mês":
+
+    df_historico_filtrado = (
+        df_historico_filtrado.tail(1)
+    )
+
+elif filtro_periodo == "Últimos 3 meses":
+
+    df_historico_filtrado = (
+        df_historico_filtrado.tail(3)
+    )
+
+elif filtro_periodo == "Últimos 6 meses":
+
+    df_historico_filtrado = (
+        df_historico_filtrado.tail(6)
+    )
+
+elif filtro_periodo == "Ano atual":
+
+    ano_atual = (
+        df_historico_filtrado["data"]
+        .dt.year
+        .max()
+    )
+
+    df_historico_filtrado = (
+        df_historico_filtrado[
+            df_historico_filtrado["data"].dt.year
+            == ano_atual
+        ]
+    )
 
 st.sidebar.title(
     "FinSight"
@@ -495,7 +545,7 @@ st.subheader(
 )
 
 grafico_evolucao_patrimonial(
-    df_patrimonio_historico
+    df_historico_filtrado
 )
 
 quantidade_transacoes= len(df)
