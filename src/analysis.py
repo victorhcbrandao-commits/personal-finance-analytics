@@ -247,3 +247,44 @@ def anos_para_fire(
 
     return anos
 
+
+def taxa_economia(
+    total_receitas,
+    total_despesas
+):
+
+    if total_receitas == 0:
+        return 0
+
+    saldo = (
+        total_receitas
+        - total_despesas
+    )
+
+    return (
+        saldo
+        / total_receitas
+    ) * 100
+
+
+def renda_passiva_anual(
+    renda_passiva_total
+):
+
+    return (
+        renda_passiva_total
+        * 12
+    )
+
+def dividend_yield(
+    renda_passiva_anual,
+    patrimonio
+):
+
+    if patrimonio == 0:
+        return 0
+
+    return (
+        renda_passiva_anual
+        / patrimonio
+    ) * 100

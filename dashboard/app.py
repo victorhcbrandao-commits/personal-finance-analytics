@@ -52,7 +52,10 @@ from src.analysis import (
     dividendos_por_mes,
     patrimonio_fire,
     percentual_fire,
-    anos_para_fire 
+    anos_para_fire,
+    taxa_economia,
+    renda_passiva_anual,
+    dividend_yield 
 )
 
 
@@ -101,6 +104,7 @@ df_projecao["patrimonio_projetado"] = (
     + df_projecao["saldo_acumulado"]
 )
 
+
 df_metas["percentual"] = (
     df_metas["atual"]
     / df_metas["objetivo"]
@@ -113,9 +117,19 @@ renda_passiva = renda_passiva_total(
     df_renda_passiva
 )
 
-df_dividendos_mes = dividendos_por_mes(
-    df_renda_passiva
+renda_passiva_ano = (
+    renda_passiva_anual(
+        renda_passiva
+    )
 )
+
+dividend_yield_percentual = (
+    dividend_yield(
+        renda_passiva_ano,
+        patrimonio
+    )
+)
+
 
 st.sidebar.title(
     "Filtros"
@@ -235,6 +249,55 @@ elif filtro_periodo == "Ano atual":
             == ano_atual
         ]
     )
+
+df_dividendos_mes = dividendos_por_mes(
+    df_renda_passiva
+)
+
+df_dividendos_filtrado = (
+    df_dividendos_mes.copy()
+)
+
+if filtro_periodo == "Último mês":
+
+    df_dividendos_filtrado = (
+        df_dividendos_filtrado.tail(1)
+    )
+
+elif filtro_periodo == "Últimos 3 meses":
+
+    df_dividendos_filtrado = (
+        df_dividendos_filtrado.tail(3)
+    )
+
+elif filtro_periodo == "Últimos 6 meses":
+
+    df_dividendos_filtrado = (
+        df_dividendos_filtrado.tail(6)
+    )
+
+df_projecao_filtrado = (
+    df_projecao.copy()
+)
+
+if filtro_periodo == "Último mês":
+
+    df_projecao_filtrado = (
+        df_projecao_filtrado.tail(1)
+    )
+
+elif filtro_periodo == "Últimos 3 meses":
+
+    df_projecao_filtrado = (
+        df_projecao_filtrado.tail(3)
+    )
+
+elif filtro_periodo == "Últimos 6 meses":
+
+    df_projecao_filtrado = (
+        df_projecao_filtrado.tail(6)
+    )
+
 
 st.sidebar.title(
     "FinSight"
@@ -400,6 +463,14 @@ total_despesas = df_resumo_mensal["Despesa"].sum()
 
 saldo_acumulado = df_resumo_mensal["Saldo"].sum()
 
+taxa_economia_percentual = (
+    taxa_economia(
+        total_receitas,
+        total_despesas
+    )
+)
+
+
 patrimonio = patrimonio_total(
     df_patrimonio_filtrado
 )
@@ -563,7 +634,45 @@ with col3:
     card_kpi("Saldo", formatar_moeda(saldo_acumulado), "💳", "#636EFA")
 
 with col4:
-    card_kpi("Transações", quantidade_transacoes, "📊", "#FFFFFF")
+    card_kpi("Taxa de Economia", f"{taxa_economia_percentual:.1f}%", "🚀", "#00CC96")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+
+    card_kpi(
+        "Transações",
+        str(quantidade_transacoes),
+        "📋",
+        "#F59E0B"
+    )
+
+with col2:
+
+    card_kpi(
+        "Renda Passiva Anual",
+        formatar_moeda(renda_passiva_ano),
+        "💵",
+        "#00CC96"
+    )
+
+with col3:
+
+    card_kpi(
+        "Dividend Yield",
+        f"{dividend_yield_percentual:.2f}%",
+        "📈",
+        "#3B82F6"
+    )
+
+with col4:
+
+    card_kpi(
+        "Meta FIRE",
+        f"{percentual_independencia:.1f}%",
+        "🔥",
+        "#EF4444"
+    )
 
 st.subheader(
     "Saldo Mensal Projetado"
@@ -1089,13 +1198,13 @@ with col2:
     "Dividendos por Mês"
 )
 
-df_dividendos_mes["valor_formatado"] = (
-    df_dividendos_mes["valor"]
+df_dividendos_filtrado["valor_formatado"] = (
+    df_dividendos_filtrado["valor"]
     .apply(formatar_moeda)
 )
 
 grafico_dividendos(
-    df_dividendos_mes
+    df_dividendos_filtrado
 )
 
 st.divider()
