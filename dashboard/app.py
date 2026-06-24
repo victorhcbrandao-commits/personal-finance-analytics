@@ -653,54 +653,29 @@ with col3:
 with col4:
     card_kpi("Taxa de Economia", f"{taxa_economia_percentual:.1f}%", "🚀", "#00CC96")
 
-col1, col2, col3, col4, col5 = st.columns(5)
+st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
-
-    card_kpi(
-    "Crescimento Mensal",
-    f"{crescimento_patrimonio_percentual:.1f}%",
-    "📈",
-    "#00CC96"
-)
+    card_kpi("Crescimento Mensal", f"{crescimento_patrimonio_percentual:.1f}%", "📈", "#00CC96")
 
 with col2:
-
-    card_kpi(
-        "Crescimento Anual",
-        f"{crescimento_anual:.1f}%",
-        "📆",
-        "#3B82F6"
-    )
+    card_kpi("Crescimento Anual", f"{crescimento_anual:.1f}%", "📅", "#3B82F6")
 
 with col3:
+    card_kpi("Renda Passiva Anual", formatar_moeda(renda_passiva * 12), "💵","#00CC96")
 
-    card_kpi(
-        "Renda Passiva Anual",
-        formatar_moeda(
-            renda_passiva_ano
-        ),
-        "💵",
-        "#00CC96"
-    )
+st.markdown("<div style='height:14px;'></div>", unsafe_allow_html=True)
 
-with col4:
+col1, col2 = st.columns(2)
 
-    card_kpi(
-        "Meses de Reserva",
-        f"{meses_reserva:.1f}",
-        "🛡️",
-        "#3B82F6"
-    )
+with col1:
+    card_kpi("Meses de Reserva", f"{meses_reserva:.1f}", "🛡️", "#3B82F6")
 
-with col5:
+with col2:
+    card_kpi("Meta FIRE", f"{percentual_independencia:.1f}%", "🔥", "#8B5CF6")
 
-    card_kpi(
-        "Meta FIRE",
-        f"{percentual_independencia:.1f}%",
-        "🔥",
-        "#8B5CF6"
-    )
 
 st.subheader(
     "Saldo Mensal Projetado"
