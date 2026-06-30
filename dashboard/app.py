@@ -10,27 +10,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
-
 import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
-from math import ceil
 
-
-from io import BytesIO
-
-
-from components.graficos import(
-    grafico_patrimonio_instituicao,
-    grafico_patrimonio_tipo,
-    grafico_evolucao_patrimonial,
-    grafico_projecao,
-    grafico_dividendos
-)
-from components.card_fire import card_fire
-from components.card_meta import card_meta
-from components.card_cartao import card_cartao
-from components.card_kpi import card_kpi
 from src.utils import formatar_moeda
 from src.load_data import (
     carregar_transacoes,
@@ -47,8 +28,7 @@ from src.cashflow import (
     gerar_fluxo_caixa,
     gerar_resumo_mensal
 )
-from src.analysis import maiores_despesas
-from src.analysis import gastos_por_categoria
+
 from src.analysis import (
     maiores_despesas,
     maiores_receitas,
@@ -654,7 +634,7 @@ st.divider()
 
 
 # ------------------------------------------------------------------------------
-# 6.2 PATRIMÔNIO
+# 6.1 PATRIMÔNIO
 # ------------------------------------------------------------------------------
 
 renderizar_patrimonio(
@@ -670,7 +650,7 @@ st.divider()
 
 
 # ------------------------------------------------------------------------------
-# 6.1 VISÃO GERAL
+# 6.2 VISÃO GERAL
 # ------------------------------------------------------------------------------
 
 renderizar_visao_geral(
@@ -733,7 +713,6 @@ st.divider()
 renderizar_transacoes(df)
 
 
-
 # ------------------------------------------------------------------------------
 # 6.7 CARTÕES
 # ------------------------------------------------------------------------------
@@ -743,7 +722,6 @@ renderizar_cartoes(
     faturas_filtrado,
     formatar_moeda
 )
-
 
 
 # ------------------------------------------------------------------------------
