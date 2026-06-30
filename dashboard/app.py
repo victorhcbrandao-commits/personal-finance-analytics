@@ -78,6 +78,8 @@ from pages.dashboard_sections.renda_passiva import renderizar_renda_passiva
 
 from pages.dashboard_sections.fire import renderizar_fire
 
+from src.services.dashboard_service import preparar_dashboard
+
 
 # ==============================================================================
 # 2. CONFIGURAÇÃO DA APLICAÇÃO
@@ -456,38 +458,12 @@ if tipo_pagamento_selecionado != "Todos":
 # ==============================================================================
 
 
-top_despesas = maiores_despesas(df)
+dados_dashboard = preparar_dashboard(df)
 
-top_despesas["valor_formatado"] = (
-    top_despesas["valor"]
-    .apply(
-        lambda x:
-        f"R$ {x:,.0f}"
-        .replace(",", ".")
-        if x.is_integer()
-        else
-        f"R$ {x:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
-)
-
-top_receitas = maiores_receitas(df)
-
-top_receitas["valor_formatado"] = (
-    top_receitas["valor"]
-    .apply(formatar_moeda)
-)
-
-categorias = gastos_por_categoria(df)
-
-cartoes = despesas_por_cartao(df)
-
-cartoes["valor_formatado"] = (
-    cartoes["valor"]
-    .apply(formatar_moeda)
-)
+top_despesas = dados_dashboard.gastos.top_despesas
+top_receitas = dados_dashboard.gastos.top_receitas
+categorias = dados_dashboard.gastos.categorias
+cartoes = dados_dashboard.gastos.cartoes
 
 df_fluxo_caixa = gerar_fluxo_caixa(df)
 
