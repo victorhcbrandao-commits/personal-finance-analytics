@@ -78,6 +78,27 @@ from src.indicadores import calcular_variacao_receita, calcular_variacao_despesa
 
 from pages.dashboard_sections.overview import renderizar_visao_geral
 
+from pages.dashboard_sections.patrimonio import renderizar_patrimonio
+
+from pages.dashboard_sections.saldo_projetado import renderizar_saldo_projetado
+
+from pages.dashboard_sections.fluxo_caixa import renderizar_fluxo_caixa
+
+from pages.dashboard_sections.gastos import renderizar_gastos
+
+from pages.dashboard_sections.transacoes import renderizar_transacoes
+
+from pages.dashboard_sections.cartoes import renderizar_cartoes
+
+from pages.dashboard_sections.planejamento import renderizar_planejamento
+
+from pages.dashboard_sections.projecoes import renderizar_projecoes
+
+from pages.dashboard_sections.renda_passiva import renderizar_renda_passiva
+
+from pages.dashboard_sections.fire import renderizar_fire
+
+
 # ==============================================================================
 # 2. CONFIGURAÇÃO DA APLICAÇÃO
 # ==============================================================================
@@ -623,87 +644,33 @@ variacao_despesa = calcular_variacao_despesa(
     despesa_anterior
 )
 
+st.divider()
 
 
 # ==============================================================================
 # 6.DASHBOARD
 # ==============================================================================
 
+
+
 # ------------------------------------------------------------------------------
-# 6.1 PATRIMÔNIO
+# 6.2 PATRIMÔNIO
 # ------------------------------------------------------------------------------
 
-
-st.divider()
-
-st.header(
-    "💰 Patrimônio"
-)
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    card_kpi(
-        "Patrimônio Total",
-        formatar_moeda(patrimonio),
-        "💰",
-        "#3B82F6"
-    )
-
-with col2:
-    card_kpi(
-        "Caixa",
-        formatar_moeda(caixa),
-        "💵",
-        "#00CC96"
-    )
-
-with col3:
-    card_kpi(
-        "Investimentos",
-        formatar_moeda(investimentos),
-        "📈",
-        "#F59E0B"
-    )
-
-
-st.subheader(
-    "Patrimônio por Instituição"
-)
-
-patrimonio_instituicao["valor_formatado"] = (
-    patrimonio_instituicao["valor"]
-    .apply(formatar_moeda)
-)
-
-grafico_patrimonio_instituicao(
-    patrimonio_instituicao
-)
-
-st.subheader(
-    "Patrimônio por Tipo"
-)
-
-patrimonio_tipo["valor_formatado"] = (
-    patrimonio_tipo["valor"]
-    .apply(formatar_moeda)
-)
-
-grafico_patrimonio_tipo(
-    patrimonio_tipo
-)
-
-
-st.subheader(
-    "Evolução Patrimonial"
-)
-
-grafico_evolucao_patrimonial(
+renderizar_patrimonio(
+    patrimonio,
+    caixa,
+    investimentos,
+    patrimonio_instituicao,
+    patrimonio_tipo,
     df_historico_filtrado
 )
 
+st.divider()
+
+
 # ------------------------------------------------------------------------------
-# 6.2 VISÃO GERAL
+# 6.1 VISÃO GERAL
 # ------------------------------------------------------------------------------
 
 renderizar_visao_geral(
@@ -720,129 +687,29 @@ renderizar_visao_geral(
     variacao_despesa
 )
 
+st.divider()
 
 # ------------------------------------------------------------------------------
 # 6.3 SALDO MENSAL PROJETADO
 # ------------------------------------------------------------------------------
 
 
-st.subheader(
-    "Saldo Mensal Projetado"
+renderizar_saldo_projetado(
+    df_resumo_mensal
 )
 
-fig = px.line(
-    df_resumo_mensal,
-    x="periodo",
-    y="Saldo",
-    markers=True
-)
-
-fig.update_layout(
-    xaxis_title="Período",
-    yaxis_title="Valor",
-    legend_title="Tipo"
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={
-        "displayModeBar": False
-    }
-)
+st.divider()
 
 # ------------------------------------------------------------------------------
 # 6.4 FLUXO DE CAIXA
 # ------------------------------------------------------------------------------
 
 
-df_grafico = df_resumo_mensal.copy()
-
-df_grafico["Saldo Acumulado"] = (
-    df_grafico["Saldo"].cumsum()
+renderizar_fluxo_caixa(
+    df_resumo_mensal
 )
 
-fig = go.Figure()
-
-fig.add_trace(
-    go.Bar(
-        x=df_grafico["periodo"],
-        y=df_grafico["Receita"],
-        name="Receitas",
-        marker_color="#00CC96"
-    )
-)
-
-fig.add_trace(
-    go.Bar(
-        x=df_grafico["periodo"],
-        y=df_grafico["Despesa"],
-        name="Despesas",
-        marker_color="#EF553B"
-    )
-)
-
-fig.add_trace(
-    go.Scatter(
-        x=df_grafico["periodo"],
-        y=df_grafico["Saldo Acumulado"],
-        mode="lines+markers",
-        name="Saldo Acumulado",
-        line=dict(
-            color="#3B82F6",
-            width=5
-        ),
-        marker=dict(
-            size=9,
-            color="#93C5FD",
-            line=dict(
-                width=2,
-                color="#3B82F6"
-            )
-        )
-    )
-)
-
-fig.update_xaxes(
-    title_text=None,
-    showgrid=False
-)
-
-fig.update_yaxes(
-    title_text=None,
-    showgrid=True,
-    gridcolor="#1f2937"
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    barmode="group",
-    xaxis_title=None,
-    yaxis_title=None,
-    height=500,
-    hovermode="x unified",
-    margin=dict(l=20, r=20, t=40, b=20),
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    legend=dict(
-        orientation="h",
-        x=0,
-        y=1.12
-    ),
-    bargap=0.35
-)
-
-st.subheader("Fluxo de Caixa Mensal")
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={"displayModeBar": False}
-)
+st.divider()
 
 
 # ------------------------------------------------------------------------------
@@ -850,547 +717,56 @@ st.plotly_chart(
 # ------------------------------------------------------------------------------
 
 
-st.subheader("Top Maiores Despesas")
-
-fig = px.bar(
+renderizar_gastos(
     top_despesas,
-    x="valor",
-    y="descricao",
-    orientation="h",
-    text="valor_formatado",
-    color_discrete_sequence=["#EF553B"]
-)
-
-fig.update_traces(
-    texttemplate="%{text}",
-    textposition="outside",
-    textfont=dict(
-        size=13,
-        color="white"
-    ),
-    marker=dict(
-        color="#EF553B",
-        line=dict(width=0)
-    )
-)
-
-fig.update_xaxes(
-    range=[0, top_despesas["valor"].max() * 1.45],
-    visible=False,
-    showgrid=False
-)
-
-fig.update_yaxes(
-    title="",
-    showgrid=False
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    xaxis_title="",
-    yaxis_title="",
-    showlegend=False,
-    yaxis={
-        "categoryorder": "total ascending"
-    },
-    height=420,
-    margin=dict(l=20, r=100, t=20, b=20),
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    bargap=0.25
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={"displayModeBar": False}
-)
-
-st.subheader("Top Receitas")
-
-fig = px.bar(
     top_receitas,
-    x="valor",
-    y="descricao",
-    orientation="h",
-    text="valor_formatado",
-    color_discrete_sequence=["#00CC96"]
-)
-
-fig.update_traces(
-    texttemplate="%{text}",
-    textposition="outside",
-    textfont=dict(
-        size=13,
-        color="white"
-    ),
-    marker=dict(
-        color="#00CC96",
-        line=dict(width=0)
-    )
-)
-
-fig.update_xaxes(
-    range=[0, top_receitas["valor"].max() * 1.35],
-    visible=False,
-    showgrid=False
-)
-
-fig.update_yaxes(
-    title="",
-    showgrid=False
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    xaxis_title="",
-    yaxis_title="",
-    showlegend=False,
-    yaxis={
-        "categoryorder": "total ascending"
-    },
-    height=280,
-    margin=dict(l=20, r=100, t=20, b=20),
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    bargap=0.25
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={"displayModeBar": False}
-)
-
-st.subheader("Gastos por Categoria")
-
-categorias_exibir = categorias.copy()
-
-categorias_exibir["valor"] = (
-    categorias_exibir["valor"]
-    .apply(formatar_moeda)
-)
-
-categorias_exibir = categorias_exibir.rename(
-    columns={
-        "categoria": "Categoria",
-        "valor": "Valor"
-    }
-)
-
-st.dataframe(
-    categorias_exibir,
-    hide_index=True,
-    width="stretch"
-)
-
-fig = px.bar(
     categorias,
-    x="categoria",
-    y="valor",
-    text="valor",
-    color_discrete_sequence=["#EF553B"]
+    cartoes
 )
 
-fig.update_traces(
-    texttemplate="R$ %{text:.2f}",
-    textposition="outside",
-    textfont=dict(
-        size=13,
-        color="white"
-    ),
-    marker=dict(
-        color="#EF553B",
-        line=dict(width=0)
-    )
-)
-
-fig.update_yaxes(
-    title="",
-    showgrid=True,
-    gridcolor="#1f2937"
-)
-
-fig.update_xaxes(
-    title="",
-    showgrid=False
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    xaxis_title="",
-    yaxis_title="",
-    showlegend=False,
-    height=420,
-    margin=dict(l=20, r=40, t=20, b=40),
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    bargap=0.35
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={"displayModeBar": False}
-)
-
-st.subheader("Despesas por Cartão")
-
-fig = px.bar(
-    cartoes,
-    x="valor",
-    y="cartao",
-    orientation="h",
-    text="valor_formatado",
-    color="cartao",
-    color_discrete_map={
-        "Black Visa": "#F59E0B",
-        "Black Master": "#EF4444",
-        "Azul Platinum": "#2563EB"
-    }
-)
-
-fig.update_traces(
-    texttemplate="%{text}",
-    textposition="outside",
-    textfont=dict(
-        size=13,
-        color="white"
-    ),
-    marker=dict(
-        line=dict(width=0)
-    )
-)
-
-fig.update_xaxes(
-    range=[0, cartoes["valor"].max() * 1.45],
-    visible=False,
-    showgrid=False
-)
-
-fig.update_yaxes(
-    title="",
-    showgrid=False
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    xaxis_title="",
-    yaxis_title="",
-    showlegend=False,
-    yaxis={
-        "categoryorder": "total ascending"
-    },
-    height=420,
-    margin=dict(l=20, r=100, t=20, b=20),
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    bargap=0.25
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={"displayModeBar": False}
-)
-
-
-st.subheader("Distribuição dos Gastos")
-
-df_pizza = categorias.reset_index()
-
-df_pizza["percentual"] = (
-    df_pizza["valor"]
-    / df_pizza["valor"].sum()
-    * 100
-)
-
-df_pizza["texto"] = df_pizza["percentual"].apply(
-    lambda x: f"{x:.1f}%" if x >= 5 else ""
-)
-
-valor_total = (
-    f"R$ {df_pizza['valor'].sum():,.2f}"
-    .replace(",", "X")
-    .replace(".", ",")
-    .replace("X", ".")
-)
-
-fig = px.pie(
-    df_pizza,
-    names="categoria",
-    values="valor",
-    hole=0.72,
-    color_discrete_sequence=[
-        "#3B82F6",
-        "#00CC96",
-        "#F59E0B",
-        "#EF553B",
-        "#8B5CF6",
-        "#EC4899"
-    ]
-)
-
-fig.update_traces(
-    text=df_pizza["texto"],
-    textinfo="text",
-    textposition="inside",
-    textfont=dict(
-        size=14,
-        color="white"
-    ),
-    marker=dict(
-        line=dict(
-            color="#111827",
-            width=2
-        )
-    )
-)
-
-fig.update_layout(
-    template="plotly_dark",
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(
-        color="#F8FAFC",
-        size=12
-    ),
-    showlegend=True,
-    legend=dict(
-        x=1.02,
-        y=0.95
-    ),
-    margin=dict(
-        t=20,
-        b=20,
-        l=20,
-        r=20
-    ),
-    annotations=[
-        dict(
-            text=f"<b>{valor_total}</b><br>Despesas",
-            x=0.5,
-            y=0.5,
-            showarrow=False,
-            font=dict(
-                size=24,
-                color="white"
-            )
-        )
-    ]
-)
-
-st.plotly_chart(
-    fig,
-    width="stretch",
-    config={
-        "displayModeBar": False
-    }
-)
+st.divider()
 
 # ------------------------------------------------------------------------------
 # 6.6 TABELA DE TRANSAÇÕES E EXPORTAÇÃO
 # ------------------------------------------------------------------------------
 
+renderizar_transacoes(df)
 
 
-df_exibicao = df[
-    [
-        "data_compra",
-        "descricao",
-        "categoria",
-        "tipo_pagamento",
-        "valor"
-    ]
-].copy()
-
-
-df_exibicao["data_compra"] = (
-    df_exibicao["data_compra"]
-    .dt.strftime("%d/%m/%Y")
-)
-
-df_exibicao.columns = [
-    "Data",
-    "Descrição",
-    "Categoria",
-    "Tipo de Pagamento",
-    "Valor"
-]
-
-df_exibicao["Valor"] = (
-    df_exibicao["Valor"]
-    .apply(
-        lambda x:
-        f"R$ {x:,.2f}"
-        .replace(",", "X")
-        .replace(".", ",")
-        .replace("X", ".")
-    )
-)
-
-buffer = BytesIO()
-
-df_exibicao.to_excel(
-    buffer,
-    index=False,
-    engine="openpyxl"
-)
-
-buffer.seek(0)
-
-st.download_button(
-    label="📥 Baixar Transações em Excel",
-    data=buffer,
-    file_name="transacoes.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
-
-excel = df_exibicao.to_excel(
-    "transacoes.xlsx",
-    index=False
-)
-
-st.subheader(
-    "Transações"
-)
-
-st.dataframe(
-    df_exibicao
-)
-
-st.divider()
 
 # ------------------------------------------------------------------------------
 # 6.7 CARTÕES
 # ------------------------------------------------------------------------------
 
 
-st.header(
-    "💳 Cartões"
+renderizar_cartoes(
+    faturas_filtrado,
+    formatar_moeda
 )
 
-st.subheader(
-    "Próximas Faturas"
-)
-
-col1, col2, col3 = st.columns(3)
-
-for i, (_, linha) in enumerate(faturas_filtrado.iterrows()):
-
-    coluna = [col1, col2, col3][i % 3]
-
-    with coluna:
-        card_cartao(
-            linha,
-            formatar_moeda
-        )
-
-st.divider()
 
 
 # ------------------------------------------------------------------------------
 # 6.8 PLANEJAMENTO
 # ------------------------------------------------------------------------------
 
-
-
-st.header(
-    "🎯 Planejamento"
+renderizar_planejamento(
+    df_projecao,
+    df_metas,
+    patrimonio,
+    aporte_mensal,
+    calcular_meses_meta
 )
-
-patrimonio_dezembro = (
-    df_projecao["patrimonio_projetado"]
-    .iloc[-1]
-)
-
-col1, col2 = st.columns(2)
-
-with col1:
-
-    card_kpi(
-        "Patrimônio Projetado",
-        formatar_moeda(
-            patrimonio_dezembro
-        ),
-        "🚀",
-        "#3B82F6"
-    )
-
-with col2:
-
-    crescimento = (patrimonio_dezembro - patrimonio)
-
-    card_kpi(
-        "Crescimento Projetado",
-        formatar_moeda(
-            crescimento
-        ),
-        "📈",
-        "#00CC96"
-    )
         
-
-st.subheader(
-    "Metas Financeiras"
-)
-
-col1, col2 = st.columns(2)
-
-
-for i, (_, linha) in enumerate(df_metas.iterrows()):
-
-    
-    coluna = [col1, col2][i % 2]
-
-    
-    with coluna:
-
-        card_meta(
-            linha,
-            patrimonio,
-            aporte_mensal,
-            formatar_moeda,
-            calcular_meses_meta
-        )
-        
-st.divider()
-
 
 # ------------------------------------------------------------------------------
 # 6.9 PROJEÇÕES
 # ------------------------------------------------------------------------------
 
 
-st.header(
-    "📈 Projeções"
-)
-
-st.subheader(
-    "Projeção Financeira"
-)
-
-grafico_projecao(
+renderizar_projecoes(
     df_projecao
 )
-
-st.divider()
 
 
 # ------------------------------------------------------------------------------
@@ -1398,63 +774,18 @@ st.divider()
 # ------------------------------------------------------------------------------
 
 
-st.header(
-    "💵 Renda Passiva"
-)
-
-st.divider()
-
-col1, col2 = st.columns(2)
-
-with col1:
-    card_kpi(
-        "Renda Passiva Total",
-        formatar_moeda(renda_passiva),
-        "💵",
-        "#00CC96"
-    )
-
-with col2:
-    media_mensal = df_dividendos_mes["valor"].mean()
-
-    card_kpi(
-        "Média Mensal",
-        formatar_moeda(media_mensal),
-        "📈",
-        "#3B82F6"
-    )
-
-
-st.divider()
-
-
-st.subheader(
-    "📈 Dividendos por Mês"
-)
-
-df_dividendos_filtrado["valor_formatado"] = (
-    df_dividendos_filtrado["valor"]
-    .apply(formatar_moeda)
-)
-
-grafico_dividendos(
+renderizar_renda_passiva(
+    renda_passiva,
+    df_dividendos_mes,
     df_dividendos_filtrado
 )
-
-st.divider()
 
 # ------------------------------------------------------------------------------
 # 6.11 INDEPENDÊNCIA FINANCEIRA (FIRE)
 # ------------------------------------------------------------------------------
 
 
-st.header(
-    "🔥 Independência Financeira"
-)
-
-col1, col2, col3 = st.columns(3)
-
-card_fire(
+renderizar_fire(
     patrimonio_objetivo,
     percentual_independencia,
     anos_faltantes,

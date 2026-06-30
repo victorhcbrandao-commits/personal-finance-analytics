@@ -1,7 +1,25 @@
+"""
+==============================================================================
+FinSight
+Módulo: Visão Geral
+
+Responsável pela renderização da visão geral do dashboard.
+==============================================================================
+"""
+
+# ==============================================================================
+# IMPORTS
+# ==============================================================================
+
 import streamlit as st
 
 from components.card_kpi import card_kpi
 from src.utils import formatar_moeda
+
+
+# ==============================================================================
+# RENDERIZAÇÃO
+# ==============================================================================
 
 
 def renderizar_visao_geral(
@@ -16,7 +34,8 @@ def renderizar_visao_geral(
     percentual_independencia,
     variacao_receita,
     variacao_despesa
-):
+):    
+   
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
